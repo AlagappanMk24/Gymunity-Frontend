@@ -6,10 +6,37 @@
       </div>
 
       <div class="nav-links">
-      
+        @if (authStore.isAuthenticated()) {
+          <div class="user-section">
+            <div class="user-info">
+              <span class="user-name">{{ authStore.userName() }}</span>
+              <span class="user-role">{{ authStore.userRole() }}</span>
+            </div>
+            @if (authStore.currentUser()?.profilePhotoUrl) {
+              <img 
+                [src]="authStore.currentUser()?.profilePhotoUrl" 
+                alt="Profile" 
+                class="user-avatar"
+              />
+            } @else {
+              <div class="user-avatar-placeholder">{{ authStore.userName()?.charAt(0).toUpperCase() }}</div>
+            }
+            <div class="dropdown-menu">
+              <a routerLink="/auth/update-profile" class="dropdown-item">
+                📝 Update Profile
+              </a>
+              <a routerLink="/auth/change-password" class="dropdown-item">
+                🔒 Change Password
+              </a>
+              <button (click)="logout()" class="dropdown-item logout-btn">
+                🚪 Logout
+              </button>
+            </div>
+          </div>
+        } @else {
           <a routerLink="/auth/login" class="nav-link login-link">Login</a>
           <a routerLink="/auth/register" class="nav-link register-link">Register</a>
-        
+        }
       </div>
     </div>
   </nav>
