@@ -1,0 +1,178 @@
+<div class="min-h-screen bg-linear-to-br from-sky-600 via-sky-700 to-blue-800 flex items-center justify-center px-4 py-8">
+  <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+    
+    <!-- Left Side - Branding & Benefits (Same as Register) -->
+    <div class="hidden lg:flex flex-col justify-center text-white space-y-8 px-8">
+      <div class="animate-fade-in">
+        <div class="w-20 h-20 bg-white bg-opacity-20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white border-opacity-30">
+          <span class="text-sky-600 font-bold text-3xl">G</span>
+        </div>
+        <h1 class="text-5xl font-bold mb-3">Gymunity</h1>
+        <p class="text-xl text-sky-100">Secure Your Account</p>
+      </div>
+
+      <div class="space-y-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center shrink-0 backdrop-blur-md border border-white border-opacity-20">
+            <app-icon name="shield" size="24" color="sky"></app-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-1">Enhanced Security</h3>
+            <p class="text-sky-100">Two-factor authentication for account protection</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center shrink-0 backdrop-blur-md border border-white border-opacity-20">
+            <app-icon name="lock" size="24" color="sky"></app-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-1">Secure Access</h3>
+            <p class="text-sky-100">One-time code prevents unauthorized access</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center shrink-0 backdrop-blur-md border border-white border-opacity-20">
+            <app-icon name="zap" size="24" color="sky"></app-icon>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-1">Quick Verification</h3>
+            <p class="text-sky-100">Get verified instantly and start your journey</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - OTP Verification Form -->
+    <div class="w-full">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 lg:p-10 max-h-[90vh] overflow-y-auto">
+        <!-- Mobile Branding -->
+        <div class="lg:hidden text-center mb-6">
+          <div class="w-14 h-14 bg-sky-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <app-icon name="shield" size="28" color="white"></app-icon>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-900">Gymunity</h1>
+          <p class="text-gray-500 text-sm mt-1">Secure Verification</p>
+        </div>
+
+        <!-- Form Header -->
+        <div class="mb-6">
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Verify Your Account</h2>
+          <p class="text-gray-600 text-sm">
+            Enter the 6-digit code sent to 
+            <span class="font-semibold text-sky-600">{{ email() }}</span>
+          </p>
+          <p class="text-sm text-sky-600 mt-1">{{ purposeDisplayText() }}</p>
+        </div>
+
+        <!-- Timer -->
+        <div *ngIf="timer() > 0" class="bg-sky-50 border border-sky-200 rounded-lg p-4 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <app-icon name="zap" size="20" color="sky"></app-icon>
+              <span class="text-sm font-medium text-gray-700">Code expires in:</span>
+            </div>
+            <div class="text-lg font-bold text-sky-600">{{ formatTime(timer()) }}</div>
+          </div>
+        </div>
+
+        <!-- OTP Form -->
+        <form (ngSubmit)="onSubmit()" class="space-y-6">
+          <!-- OTP Input -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-900 mb-3">
+              6-digit Verification Code *
+            </label>
+            <div class="flex justify-center gap-3 mb-2">
+              <input 
+                *ngFor="let i of [0,1,2,3,4,5]; let idx = index"
+                #otpInput
+                type="text"
+                maxlength="1"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                autocomplete="one-time-code"
+                (input)="onOtpInput($event, idx)"
+                (keydown)="onOtpKeyDown($event, idx)"
+                (focus)="onOtpFocus($event, idx)"
+                (paste)="onOtpPaste($event)"
+                class="otp-input"
+                [class.otp-filled]="otpDigits[idx]"
+                [class.otp-error]="messageType() === 'error' && message()"
+                [class.otp-success]="messageType() === 'success' && message()"
+              />
+            </div>
+            <p 
+              *ngIf="message() && messageType() === 'error'" 
+              class="text-red-500 text-xs text-center mt-2 flex items-center justify-center gap-1"
+            >
+              <app-icon name="alert" size="14" color="red"></app-icon>
+              {{ message() }}
+            </p>
+          </div>
+
+          <!-- Error/Success Messages -->
+          <div *ngIf="message()" [class]="getMessageClasses()" class="px-4 py-3 rounded-lg text-sm flex items-start gap-3">
+            <app-icon 
+              [name]="messageType() === 'success' ? 'check' : 'alert'" 
+              size="20" 
+              [color]="messageType() === 'success' ? 'green' : 'red'"
+              class="shrink-0 mt-0.5"
+            ></app-icon>
+            <span>{{ message() }}</span>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            [disabled]="isLoading() || !isOtpComplete() || timer() === 0"
+            class="w-full mt-2 py-3 px-4 bg-linear-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition duration-300 transform hover:scale-105 hover:shadow-lg disabled:hover:scale-100 disabled:shadow-md flex items-center justify-center gap-2"
+          >
+            <app-icon *ngIf="!isLoading()" name="check" size="20" color="white"></app-icon>
+            {{ isLoading() ? 'Verifying...' : getSubmitButtonText() }}
+          </button>
+
+          <!-- Resend OTP -->
+          <div class="text-center pt-4 border-t border-gray-200">
+            <p class="text-sm text-gray-600 mb-3">
+              Didn't receive the code?
+            </p>
+            <button
+              type="button"
+              (click)="resendOtp()"
+              [disabled]="resendDisabled() || isLoading()"
+              class="text-sm font-semibold text-sky-600 hover:text-sky-700 disabled:text-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 mx-auto"
+            >
+              <app-icon name="chevron-right" size="16" color="sky" [class.disabled-icon]="resendDisabled()"></app-icon>
+              {{ getResendButtonText() }}
+            </button>
+            
+            <div *ngIf="resendDisabled() && resendTimer() > 0" class="text-xs text-gray-500 mt-2">
+              Available in {{ formatTime(resendTimer()) }}
+            </div>
+          </div>
+
+          <!-- Cancel/Back -->
+          <div class="text-center space-y-3 mt-6">
+            <button
+              type="button"
+              (click)="cancel()"
+              class="text-gray-600 hover:text-sky-600 transition inline-flex items-center gap-1 text-sm font-medium"
+            >
+              <app-icon name="arrow-left" size="16" color="sky"></app-icon>
+              {{ getCancelButtonText() }}
+            </button>
+            
+            <p class="text-gray-600 text-sm">
+              Having trouble? 
+              <a href="mailto:support@gymunity.com" class="font-semibold text-sky-600 hover:text-sky-700 transition">
+                Contact Support
+              </a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
