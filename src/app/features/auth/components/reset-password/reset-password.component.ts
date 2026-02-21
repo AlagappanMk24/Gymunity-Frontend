@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -9,13 +9,13 @@ import {
 } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, IconComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './reset-password.component.html',
+  styleUrls: ['../../auth.shared.scss'],
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);

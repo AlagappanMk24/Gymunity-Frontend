@@ -7,7 +7,7 @@ import {
   ElementRef,
   AfterViewInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf} from '@angular/common';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -22,15 +22,14 @@ import {
   UserRole,
   GoogleAuthRequest,
 } from '../../../../core/models/auth.model';
-import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, IconComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
+  styleUrls: ['../../auth.shared.scss'],
 })
 export class RegisterComponent implements AfterViewInit {
   @ViewChild('googleSignInButton') googleSignInButton!: ElementRef;
@@ -197,9 +196,11 @@ export class RegisterComponent implements AfterViewInit {
       },
     });
   }
+   selectedFileName = '';
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
+      this.selectedFileName = file.name;
       this.registerForm.get('profilePhoto')?.setValue(file);
     }
   }

@@ -15,17 +15,16 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import {
-  IconComponent,
   IconName,
 } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-otp-verification',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconComponent, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './otp-verification.component.html',
-  styleUrls: ['./otp-verification.component.css'],
+  styleUrls: ['../../auth.shared.scss'],
 })
 export class OtpVerificationComponent
   implements OnInit, OnDestroy, AfterViewInit

@@ -1,0 +1,507 @@
+   <!-- ═══════════════════════════════════════════════════════════════
+         NAVIGATION
+    ═══════════════════════════════════════════════════════════════ -->
+    <nav class="gm-nav" [class.gm-nav--scrolled]="navScrolled()">
+      <div class="gm-nav__inner">
+
+        <!-- Brand -->
+        <button class="gm-brand" (click)="scrollToTop()">
+          <span class="gm-brand__icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </span>
+          <span class="gm-brand__name">Gymunity</span>
+        </button>
+
+        <!-- Desktop Links -->
+        <div class="gm-nav__links">
+          <a [routerLink]="['/discover/trainers']" class="gm-nav__link">Trainers</a>
+          <a [routerLink]="['/discover/programs']" class="gm-nav__link">Programs</a>
+          <a href="#" class="gm-nav__link">About</a>
+          <a href="#" class="gm-nav__link">Contact</a>
+        </div>
+
+        <!-- Auth Area -->
+        <div class="gm-nav__auth">
+          @if (currentUser()) {
+            <!-- Logged-in User Display -->
+            <div class="gm-user-badge">
+              <div class="gm-user-badge__avatar">
+                @if (currentUser()?.profilePhotoUrl) {
+                  <img [src]="currentUser()?.profilePhotoUrl" [alt]="currentUser()?.name" class="gm-user-badge__img" />
+                } @else {
+                  <span class="gm-user-badge__initials">{{ getUserInitials() }}</span>
+                }
+                <span class="gm-user-badge__dot"></span>
+              </div>
+              <div class="gm-user-badge__info">
+                <span class="gm-user-badge__greeting">Welcome back</span>
+                <span class="gm-user-badge__name">{{ currentUser()?.name || currentUser()?.userName }}</span>
+              </div>
+            </div>
+            <button [routerLink]="['/dashboard']" class="gm-btn gm-btn--ghost">Dashboard</button>
+            <button (click)="logout()" class="gm-btn gm-btn--outline">Logout</button>
+          } @else {
+            <button [routerLink]="['/auth/login']" class="gm-btn gm-btn--ghost">Sign In</button>
+            <button [routerLink]="['/auth/register']" class="gm-btn gm-btn--primary">Get Started</button>
+          }
+        </div>
+
+        <!-- Mobile Toggle -->
+        <button class="gm-nav__burger" (click)="toggleMobileMenu()" [attr.aria-label]="mobileMenuOpen() ? 'Close' : 'Menu'">
+          <span class="gm-burger__bar" [class.gm-burger__bar--open-1]="mobileMenuOpen()"></span>
+          <span class="gm-burger__bar" [class.gm-burger__bar--open-2]="mobileMenuOpen()"></span>
+          <span class="gm-burger__bar" [class.gm-burger__bar--open-3]="mobileMenuOpen()"></span>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div class="gm-mobile-menu" [class.gm-mobile-menu--open]="mobileMenuOpen()">
+        <!-- If logged in, show user info in mobile -->
+        @if (currentUser()) {
+          <div class="gm-mobile-user">
+            <div class="gm-mobile-user__avatar">
+              @if (currentUser()?.profilePhotoUrl) {
+                <img [src]="currentUser()?.profilePhotoUrl" [alt]="currentUser()?.name" />
+              } @else {
+                <span>{{ getUserInitials() }}</span>
+              }
+            </div>
+            <div>
+              <p class="gm-mobile-user__greeting">Signed in as</p>
+              <p class="gm-mobile-user__name">{{ currentUser()?.name || currentUser()?.userName }}</p>
+              <p class="gm-mobile-user__email">{{ currentUser()?.email }}</p>
+            </div>
+          </div>
+        }
+        <a [routerLink]="['/discover/trainers']" (click)="closeMobileMenu()" class="gm-mobile-link">Trainers</a>
+        <a [routerLink]="['/discover/programs']" (click)="closeMobileMenu()" class="gm-mobile-link">Programs</a>
+        <a href="#" (click)="closeMobileMenu()" class="gm-mobile-link">About</a>
+        <a href="#" (click)="closeMobileMenu()" class="gm-mobile-link">Contact</a>
+        <div class="gm-mobile-divider"></div>
+        @if (currentUser()) {
+          <button [routerLink]="['/dashboard']" (click)="closeMobileMenu()" class="gm-mobile-link">Dashboard</button>
+          <button [routerLink]="['/profile']" (click)="closeMobileMenu()" class="gm-mobile-link">Profile</button>
+          <button (click)="logout()" class="gm-mobile-link gm-mobile-link--danger">Logout</button>
+        } @else {
+          <button [routerLink]="['/auth/login']" (click)="closeMobileMenu()" class="gm-mobile-link">Sign In</button>
+          <button [routerLink]="['/auth/register']" (click)="closeMobileMenu()" class="gm-mobile-cta">Get Started Free →</button>
+        }
+      </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         HERO
+    ═══════════════════════════════════════════════════════════════ -->
+    <section class="gm-hero">
+      <!-- Animated background -->
+      <div class="gm-hero__bg">
+        <div class="gm-hero__bg-img"
+          [style.backgroundImage]="currentImage() ? 'url(' + currentImage() + ')' : 'none'">
+        </div>
+        <div class="gm-hero__gradient"></div>
+        <div class="gm-hero__noise"></div>
+        <!-- Floating orbs -->
+        <div class="gm-orb gm-orb--1"></div>
+        <div class="gm-orb gm-orb--2"></div>
+        <div class="gm-orb gm-orb--3"></div>
+      </div>
+
+      <!-- Carousel progress bar -->
+      <div class="gm-hero__progress">
+        @for (img of heroImages; track $index) {
+          <button
+            class="gm-hero__pip"
+            [class.gm-hero__pip--active]="currentImageIndex() === $index"
+            (click)="currentImageIndex.set($index)">
+          </button>
+        }
+      </div>
+
+      <div class="gm-hero__content">
+
+        <!-- Personalized greeting for logged-in users -->
+        @if (currentUser()) {
+          <div class="gm-hero__welcome-pill">
+            <span class="gm-hero__welcome-dot"></span>
+            Welcome back, {{ currentUser()?.name && currentUser()!.name!.split(' ')[0] || currentUser()?.userName }}! Ready to crush it?
+          </div>
+        } @else {
+          <div class="gm-hero__badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Your Fitness Journey Starts Here
+          </div>
+        }
+
+        <h1 class="gm-hero__headline">
+          @if (currentUser()) {
+            <span class="gm-hero__headline-sub">Continue your</span>
+            Transform<br>
+            <em class="gm-hero__accent">Your Life</em>
+          } @else {
+            Transform<br>Your Body,<br>
+            <em class="gm-hero__accent">Transform Your Life</em>
+          }
+        </h1>
+
+        <p class="gm-hero__sub">
+          Connect with professional trainers and access personalized fitness programs
+          designed specifically for your goals. Join <strong>50,000+</strong> members achieving extraordinary results.
+        </p>
+
+        <div class="gm-hero__actions">
+          @if (currentUser()) {
+            <button [routerLink]="['/discover/trainers']" class="gm-cta gm-cta--primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              Explore Trainers
+            </button>
+            <button [routerLink]="['/dashboard']" class="gm-cta gm-cta--secondary">
+              Go to Dashboard →
+            </button>
+          } @else {
+            <button [routerLink]="['/auth/register']" class="gm-cta gm-cta--primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Start For Free
+            </button>
+            <button [routerLink]="['/auth/login']" class="gm-cta gm-cta--secondary">
+              Sign In →
+            </button>
+          }
+        </div>
+
+        <!-- Stats row -->
+        <div class="gm-hero__stats">
+          <div class="gm-stat">
+            <span class="gm-stat__num">500+</span>
+            <span class="gm-stat__label">Expert Trainers</span>
+          </div>
+          <div class="gm-stat__divider"></div>
+          <div class="gm-stat">
+            <span class="gm-stat__num">1,000+</span>
+            <span class="gm-stat__label">Programs</span>
+          </div>
+          <div class="gm-stat__divider"></div>
+          <div class="gm-stat">
+            <span class="gm-stat__num">50K+</span>
+            <span class="gm-stat__label">Active Members</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="gm-hero__scroll">
+        <span>Scroll</span>
+        <div class="gm-hero__scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FEATURED TRAINERS
+    ═══════════════════════════════════════════════════════════════ -->
+    <section class="gm-section gm-section--light" id="featured-trainers">
+      <div class="gm-container">
+        <div class="gm-section-head">
+          <span class="gm-section-head__eyebrow">Our Experts</span>
+          <h2 class="gm-section-head__title">Featured Trainers</h2>
+          <p class="gm-section-head__desc">Certified professionals dedicated to your transformation</p>
+        </div>
+
+        @if (isLoadingTrainers()) {
+          <div class="gm-loading">
+            <div class="gm-spinner"></div>
+            <span>Loading trainers…</span>
+          </div>
+        } @else {
+          <div class="gm-trainers-grid">
+            @for (trainer of featuredTrainers(); track trainer.id) {
+              <article class="gm-trainer-card" (click)="viewTrainerProfile(trainer)">
+                <!-- Cover -->
+                <div class="gm-trainer-card__cover">
+                  @if (getTrainerPhotoUrl(trainer)) {
+                    <img [src]="getTrainerPhotoUrl(trainer)" [alt]="trainer.userName" class="gm-trainer-card__cover-img" />
+                  }
+                  <div class="gm-trainer-card__cover-overlay"></div>
+
+                  @if (trainer.isVerified) {
+                    <span class="gm-badge gm-badge--verified">
+                      <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                      Verified
+                    </span>
+                  }
+                  @if (trainer.hasActiveSubscription) {
+                    <span class="gm-badge gm-badge--active">● Active</span>
+                  }
+
+                  <!-- Price overlay -->
+                  @if (trainer.startingPrice) {
+                    <div class="gm-trainer-card__price-tag">
+                      <span class="gm-trainer-card__price-from">from</span>
+                      <span class="gm-trainer-card__price-val">\${{ trainer.startingPrice }}</span>
+                      <span class="gm-trainer-card__price-unit">/session</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Avatar -->
+                <div class="gm-trainer-card__avatar-wrap">
+                  <div class="gm-trainer-card__avatar">
+                    @if (getTrainerPhotoUrl(trainer)) {
+                      <img [src]="getTrainerPhotoUrl(trainer)" [alt]="trainer.userName" />
+                    } @else {
+                      <span>{{ trainer.userName?.charAt(0)?.toUpperCase() || 'T' }}</span>
+                    }
+                  </div>
+                  <div class="gm-trainer-card__online-dot"></div>
+                </div>
+
+                <!-- Body -->
+                <div class="gm-trainer-card__body">
+                  <div class="gm-trainer-card__head">
+                    <div>
+                      <h3 class="gm-trainer-card__name">{{ trainer.userName || 'Trainer' }}</h3>
+                      @if (trainer.handle) {
+                        <p class="gm-trainer-card__handle">&#64;{{ trainer.handle }}</p>
+                      }
+                    </div>
+                    @if (trainer.ratingAverage) {
+                      <div class="gm-trainer-card__rating">
+                        <svg width="13" height="13" viewBox="0 0 20 20" fill="#F59E0B"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        {{ (trainer.ratingAverage).toFixed(1) }}
+                        @if (trainer.totalReviews) {
+                          <span class="gm-trainer-card__reviews">({{ trainer.totalReviews }})</span>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  @if (trainer.bio) {
+                    <p class="gm-trainer-card__bio">{{ trainer.bio }}</p>
+                  }
+
+                  <!-- Stats row -->
+                  <div class="gm-trainer-card__stats">
+                    @if (trainer.yearsExperience) {
+                      <div class="gm-trainer-card__stat">
+                        <strong>{{ trainer.yearsExperience }}</strong><span>yrs exp</span>
+                      </div>
+                    }
+                    @if (trainer.totalClients) {
+                      <div class="gm-trainer-card__stat">
+                        <strong>{{ trainer.totalClients }}</strong><span>clients</span>
+                      </div>
+                    }
+                    @if (trainer.totalReviews) {
+                      <div class="gm-trainer-card__stat">
+                        <strong>{{ trainer.totalReviews }}</strong><span>reviews</span>
+                      </div>
+                    }
+                  </div>
+
+                  <button
+                    class="gm-trainer-card__cta"
+                    (click)="viewTrainerProfile(trainer); $event.stopPropagation()">
+                    View Profile
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </button>
+                </div>
+              </article>
+            }
+          </div>
+
+          <div class="gm-section-cta">
+            <button [routerLink]="['/discover/trainers']" class="gm-pill-cta">
+              View All Trainers
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         WHY GYMUNITY — Feature Strip
+    ═══════════════════════════════════════════════════════════════ -->
+    <section class="gm-section gm-section--dark">
+      <div class="gm-container">
+        <div class="gm-section-head gm-section-head--light">
+          <span class="gm-section-head__eyebrow gm-section-head__eyebrow--light">Our Edge</span>
+          <h2 class="gm-section-head__title">Why Choose Gymunity?</h2>
+          <p class="gm-section-head__desc gm-section-head__desc--light">Everything you need to succeed, in one place</p>
+        </div>
+
+        <div class="gm-features-grid">
+          <div class="gm-feature">
+            <div class="gm-feature__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3>Affordable Pricing</h3>
+            <p>Flexible payment plans for every budget. No hidden fees, no surprises.</p>
+          </div>
+          <div class="gm-feature">
+            <div class="gm-feature__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3>Verified Trainers</h3>
+            <p>Every trainer is background-checked, certified, and proven by real results.</p>
+          </div>
+          <div class="gm-feature">
+            <div class="gm-feature__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            </div>
+            <h3>Personalized Plans</h3>
+            <p>Custom programs built around your body, goals, and schedule.</p>
+          </div>
+          <div class="gm-feature">
+            <div class="gm-feature__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            </div>
+            <h3>24/7 Support</h3>
+            <p>We're always here — for questions, guidance, or motivation at any hour.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PROGRAMS SHOWCASE
+    ═══════════════════════════════════════════════════════════════ -->
+    <section class="gm-section gm-section--light">
+      <div class="gm-container">
+        <div class="gm-section-head">
+          <span class="gm-section-head__eyebrow">Explore</span>
+          <h2 class="gm-section-head__title">Popular Programs</h2>
+          <p class="gm-section-head__desc">For all levels, all goals, all lifestyles</p>
+        </div>
+
+        @if (isLoadingPrograms()) {
+          <div class="gm-loading">
+            <div class="gm-spinner"></div>
+            <span>Loading programs…</span>
+          </div>
+        } @else if (popularPrograms().length > 0) {
+          <div class="gm-programs-grid">
+            @for (program of popularPrograms(); track program.id) {
+              <div class="gm-program-card" (click)="viewProgram(program.id)">
+                <div class="gm-program-card__thumb">
+                  @if (program.thumbnailUrl) {
+                    <img [src]="program.thumbnailUrl" [alt]="program.title" />
+                  } @else {
+                    <div class="gm-program-card__thumb-placeholder">💪</div>
+                  }
+                  <div class="gm-program-card__overlay"></div>
+                  @if (program.type) {
+                    <span class="gm-program-card__type">{{ program.type }}</span>
+                  }
+                </div>
+                <div class="gm-program-card__body">
+                  <h3>{{ program.title || 'Program' }}</h3>
+                  <p>{{ program.description || 'Fitness program designed for you' }}</p>
+                  <div class="gm-program-card__meta">
+                    @if (program.durationWeeks) {
+                      <span>⏱ {{ program.durationWeeks }} weeks</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <!-- Fallback category cards -->
+          <div class="gm-programs-grid">
+            <div class="gm-program-card gm-program-card--strength" (click)="navigateToPrograms()">
+              <div class="gm-program-card__thumb">
+                <div class="gm-program-card__thumb-placeholder">🏋️</div>
+              </div>
+              <div class="gm-program-card__body">
+                <h3>Strength Training</h3>
+                <p>Build muscle and increase your overall strength with comprehensive programs</p>
+              </div>
+            </div>
+            <div class="gm-program-card gm-program-card--cardio" (click)="navigateToPrograms()">
+              <div class="gm-program-card__thumb">
+                <div class="gm-program-card__thumb-placeholder">🏃</div>
+              </div>
+              <div class="gm-program-card__body">
+                <h3>Cardio & Endurance</h3>
+                <p>Boost cardiovascular health and stamina with dynamic workouts</p>
+              </div>
+            </div>
+            <div class="gm-program-card gm-program-card--yoga" (click)="navigateToPrograms()">
+              <div class="gm-program-card__thumb">
+                <div class="gm-program-card__thumb-placeholder">🧘</div>
+              </div>
+              <div class="gm-program-card__body">
+                <h3>Flexibility & Yoga</h3>
+                <p>Enhance balance, flexibility, and mental wellness through mindful movement</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="gm-section-cta">
+          <button [routerLink]="['/discover/programs']" class="gm-pill-cta">
+            Browse All Programs
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TESTIMONIALS
+    ═══════════════════════════════════════════════════════════════ -->
+    <section class="gm-section gm-section--accent">
+      <div class="gm-container">
+        <div class="gm-section-head">
+          <span class="gm-section-head__eyebrow">Real Results</span>
+          <h2 class="gm-section-head__title">Success Stories</h2>
+          <p class="gm-section-head__desc">Thousands have transformed — now it's your turn</p>
+        </div>
+
+        <div class="gm-testimonials">
+          @for (t of testimonials; track t.id) {
+            <div class="gm-testimonial">
+              <div class="gm-testimonial__stars">★★★★★</div>
+              <p class="gm-testimonial__text">"{{ t.text }}"</p>
+              <div class="gm-testimonial__author">
+                <div class="gm-testimonial__avatar">{{ t.author.charAt(0) }}</div>
+                <div>
+                  <p class="gm-testimonial__name">{{ t.author }}</p>
+                  <p class="gm-testimonial__role">{{ t.role }}</p>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         FINAL CTA
+    ═══════════════════════════════════════════════════════════════ -->
+    <section class="gm-finale">
+      <div class="gm-finale__bg">
+        <div class="gm-orb gm-orb--finale-1"></div>
+        <div class="gm-orb gm-orb--finale-2"></div>
+      </div>
+      <div class="gm-finale__content">
+        <h2 class="gm-finale__title">
+          Ready to <em>Transform</em><br>Your Fitness?
+        </h2>
+        <p class="gm-finale__desc">
+          Join Gymunity today and connect with expert trainers<br>who are ready to help you achieve extraordinary results.
+        </p>
+        <div class="gm-finale__actions">
+          @if (currentUser()) {
+            <button [routerLink]="['/discover/trainers']" class="gm-cta gm-cta--white">Find My Trainer →</button>
+            <button [routerLink]="['/discover/programs']" class="gm-cta gm-cta--outline-white">Browse Programs</button>
+          } @else {
+            <button [routerLink]="['/auth/register']" class="gm-cta gm-cta--white">Get Started Free →</button>
+            <button [routerLink]="['/discover/trainers']" class="gm-cta gm-cta--outline-white">Browse Trainers</button>
+          }
+        </div>
+      </div>
+    </section>

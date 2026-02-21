@@ -17,15 +17,14 @@ import {
   GoogleAuthRequest,
   UserRole,
 } from '../../../../core/models/auth.model';
-import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, IconComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+   styleUrls: ['../../auth.shared.scss'],
 })
 export class LoginComponent implements AfterViewInit {
   @ViewChild('googleSignInButton') googleSignInButton!: ElementRef;
